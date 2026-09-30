@@ -1,0 +1,4 @@
+private_sources/
+*.tmp
+.DS_Store
+Thumbs.db
