@@ -19,12 +19,12 @@
 
 - `git log --oneline --decorate --graph --all` 显示当前可达历史为初始化、Stage 0、Stage 1 和 Stage 1 merge 四个 commit。
 - `git log --all --stat`、`git log --all --name-only` 以及 `git rev-list --objects --all` 均未列出 `private_sources/` 或任何原始实习材料文件对象。就**当前 refs 可达历史**而言，早期误提交的私有源文件已被移除；本审计不对本地不可达对象作公开性判断。
-- **剩余历史风险：** 可达提交的作者／提交者元数据含个人 QQ 邮箱。完整历史公开时该地址会随 commit 可见。此处不记录邮箱值；用户尚未明确同意公开该邮箱。
-- **正文中的名称：** 虽然原始文件对象不可达，`docs/project_spec.md` 和 `docs/public_scope.md` 的可达历史仍包含私有材料文件名及章节索引。这些是文本引用，不等于原文件泄露；其公开必要性及边界尚待人工审查。只改当前文件不能从历史中移除旧文本。
+- **已确认的公开元数据：** 可达提交的作者／提交者元数据含个人 QQ 邮箱。完整历史公开时该地址会随 commit 可见；本人已明确同意公开。此处不重复邮箱值。
+- **已确认的文字索引：** 虽然原始文件对象不可达，`docs/project_spec.md` 和 `docs/public_scope.md` 的可达历史仍包含私有材料文件名及章节索引。这些是文本引用，不等于原文件泄露；本人已明确同意公开现有索引文字。
 
 ## 5. Public File Inventory
 
-逐文件状态见 [public_inventory.md](public_inventory.md)：**7 SAFE、3 REVIEW、0 BLOCK**。`README.md`、`docs/project_spec.md`、`docs/public_scope.md` 为 REVIEW。加上提交元数据风险，当前候选仓库尚不具备发布条件。
+逐文件状态见 [public_inventory.md](public_inventory.md)：人工审查后为 **10 SAFE、0 REVIEW、0 BLOCK**。原始 `private_sources/` 文件不在公开清单中。
 
 ## 6. Sensitive Information Audit
 
@@ -34,7 +34,7 @@
 
 ## 7. Authenticity Audit
 
-README 与 About 均说明这是实习结束后的公开、脱敏成果转化，不称为公司内部系统，也未声称本人开发、部署公司系统或提升真实业务指标。`README.md` 和 `public_scope.md` 使用了真实实习单位名称；后者明确规定该名称的最终公开措辞须人工确认，当前尚无该项确认记录。
+README 与 About 均说明这是实习结束后的公开、脱敏成果转化，不称为公司内部系统，也未声称本人开发、部署公司系统或提升真实业务指标。`README.md` 和 `public_scope.md` 使用了真实实习单位名称；本人已明确同意公开该名称。
 
 ## 8. Demo Data Audit
 
@@ -44,7 +44,7 @@ README 与 About 均说明这是实习结束后的公开、脱敏成果转化，
 
 应用实际执行 `JSON.parse`、五个字段的存在／类型／非空检查、虚构分类路径检查，以及 `province` 和 `city` 的字面包含检查，随后汇总闸门。README、About 和 Stage 1 审计对这些能力的描述与代码相符；没有声称语义验证、事实核查或生产合规能力。
 
-`project_spec.md` 是 Stage 0 方案，仍写有六节点呈现、未约定字段校验等未完全实施的预案。该历史规格可能使读者误认当前能力，列为公开前 REVIEW，不据此扩展应用功能。
+`project_spec.md` 是 Stage 0 方案，仍写有六节点呈现、未约定字段校验等未完全实施的预案。已在文首注明这是早期预案，最终功能以 Stage 1 审计为准；未据此扩展应用功能。
 
 ## 10. Functional Regression
 
@@ -60,7 +60,7 @@ README 与 About 均说明这是实习结束后的公开、脱敏成果转化，
 
 ## 11. Changes Made During Preflight
 
-仅新增 `docs/public_inventory.md` 与本审计文件。未修改应用、README 或 Stage 0/1 文档；未进行 Git 历史改写。当前风险涉及可达历史，不能靠一次普通文案提交彻底消除。
+最初仅新增 `docs/public_inventory.md` 与本审计文件。人工同意公开相关 REVIEW 内容后，更新两份审计文档，并在 `docs/project_spec.md` 文首标明历史预案与最终功能的区别。未修改应用或 README，未改写 Git 历史。
 
 ## 12. Known Limitations
 
@@ -71,6 +71,6 @@ README 与 About 均说明这是实习结束后的公开、脱敏成果转化，
 
 ## 13. Gate Result
 
-**NOT READY**
+**READY FOR PUBLICATION REVIEW**
 
-发布前需要人工决定：是否愿意公开现有 Git 作者／提交者邮箱；是否公开真实实习单位名称及 Stage 0 的私有材料索引。若选择移除可达历史中的邮箱或索引，需要单独批准 Git 历史改写，并在改写后重新审计。Stage 2B 暂不建议启动。
+本人已在 Stage 2A 报告后明确同意公开现有 Git 作者／提交者邮箱、真实实习单位名称以及已审计文档内的私有材料文件名和章节索引，并明确限定为**仅公开已审计清单中的文字**。`private_sources/` 原始 PDF／DOCX 继续排除。Stage 2A 的 REVIEW 项已解除；本人已指示进入 Stage 2B。
