@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>工作流护栏 · AI 输出校验台</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="product"><span class="product-mark" aria-hidden="true">护</span><strong>工作流护栏</strong><span class="product-kind">AI 输出校验台</span></div>
+        <div class="toolbar-context">
+          <label class="toolbar-field" for="scenario-select"><span>测试场景</span><select id="scenario-select"><option value="valid">01 正确输出</option><option value="category">02 分类路径错误</option><option value="evidence">03 缺少原文依据</option><option value="missing">04 缺失字段</option><option value="malformed">05 JSON 格式错误</option><option value="combined">06 多个问题同时存在</option></select></label>
+          <div class="toolbar-field environment"><span>运行环境</span><strong>沙箱</strong></div>
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" class="quiet-button" id="reset-button">重置</button>
+          <button type="button" class="quiet-button" id="load-button">载入示例</button>
+          <button type="button" class="primary-button" id="run-button">运行校验 <span aria-hidden="true">→</span></button>
+          <button type="button" class="about-button" id="about-button" aria-label="关于本项目" title="关于本项目">?</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="pane source-pane" aria-labelledby="source-title">
+          <div class="pane-heading"><div><h1 id="source-title">原始输入</h1><p>文本输入 <span>·</span> UTF-8</p></div></div>
+          <textarea id="source-input" spellcheck="false" aria-label="原始输入"></textarea>
+          <div class="pane-status"><span id="character-count">字符数：0</span><span>仅在本地处理</span></div>
+        </section>
+
+        <section class="pane output-pane" aria-labelledby="output-title">
+          <div class="pane-heading"><div><h2 id="output-title">模型输出</h2><p>结构化输出</p></div><span class="format-label">JSON</span></div>
+          <div class="code-editor"><div class="line-numbers" id="line-numbers" aria-hidden="true">1</div><textarea id="json-input" spellcheck="false" wrap="off" aria-label="模型输出 JSON"></textarea></div>
+          <div class="pane-status"><span id="line-count">行数：1</span><span>可编辑 JSON</span></div>
+        </section>
+
+        <aside class="pane validation-pane" aria-labelledby="validation-title">
+          <div class="pane-heading validation-heading"><div><h2 id="validation-title">校验结果</h2><p>字段、规则与原文证据</p></div><span id="validation-state">尚未运行</span></div>
+          <div class="validation-body">
+            <div class="gate" id="gate" data-gate="idle"><span class="eyebrow">最终闸门</span><strong id="gate-label">尚未运行</strong><p id="gate-count">运行校验后查看判断</p></div>
+
+            <div class="subhead"><h3>校验流程</h3><span>4 项检查</span></div>
+            <div class="check-list">
+              <details class="check-row" data-node="parse"><summary><span class="check-index">01</span><span class="check-name">JSON 解析</span><span class="node-status">—</span></summary><p class="node-detail">检查 JSON 语法及顶层对象。</p></details>
+              <details class="check-row" data-node="schema"><summary><span class="check-index">02</span><span class="check-name">字段契约</span><span class="node-status">—</span></summary><p class="node-detail">检查必填字段及字符串类型。</p></details>
+              <details class="check-row" data-node="rules"><summary><span class="check-index">03</span><span class="check-name">业务规则</span><span class="node-status">—</span></summary><p class="node-detail">检查虚构分类路径。</p></details>
+              <details class="check-row" data-node="evidence"><summary><span class="check-index">04</span><span class="check-name">原文证据</span><span class="node-status">—</span></summary><p class="node-detail">检查地区值是否出现在原始输入中。</p></details>
+            </div>
+
+            <div class="subhead issues-head"><h3>问题明细</h3><span id="issue-count">0 项问题</span></div>
+            <div class="issue-list" id="issue-list"><p class="empty-issues">尚无校验结果。</p></div>
+          </div>
+          <div class="validation-status" id="run-meta">本次会话尚未运行</div>
+        </aside>
+      </main>
+    </div>
+
+    <dialog id="about-dialog" aria-labelledby="about-title">
+      <div class="dialog-top"><h2 id="about-title">关于工作流护栏</h2><button type="button" id="close-about" aria-label="关闭关于窗口">×</button></div>
+      <p>本工具是栗海粟在实习结束后，基于企业 AI 工作流调研中发现的通用问题完成的公开、脱敏成果转化。案例与规则均为虚构，不对应任何公司生产系统。</p>
+      <p>所有输入仅在浏览器本地处理，不上传服务器。自动检查通过也不代表业务事实已经得到证明。</p>
+      <small>栗海粟制作 · 2026</small>
+    </dialog>
+  </body>
+</html>
