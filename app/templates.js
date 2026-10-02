@@ -65,7 +65,7 @@
       modelOutput: { province: "辽宁", city: "上海", level1: "个人意外健康险", level2: "理赔", level3: "医疗咨询" },
       validationConfig: {
         requiredFields: ["province", "city", "level1", "level2", "level3"],
-        evidenceFields: ["province", "city"],
+        evidenceFields: ["province", "city", "level2"],
         enumRules: { level1: ["个人意外健康险"], level2: ["理赔", "投保"], level3: ["材料咨询", "理赔咨询"] },
       },
     },

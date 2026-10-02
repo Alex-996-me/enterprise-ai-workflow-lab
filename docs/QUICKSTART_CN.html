@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workflow Guardrail｜快速说明</title>
+    <style>
+      :root { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: #e7edf3; background: #0b121b; }
+      body { max-width: 760px; margin: 0 auto; padding: 30px 22px 70px; line-height: 1.75; }
+      h1 { font-size: 26px; } h2 { margin-top: 28px; font-size: 18px; }
+      p, li { color: #b8c9d8; } strong { color: #eef5fa; }
+      a { color: #8cc6ef; } code, pre { color: #cbe2f0; }
+      pre { padding: 16px; border: 1px solid #334252; overflow-x: auto; background: #111b27; }
+    </style>
+  </head>
+  <body>
+    <p><a href="../app/">← 返回工具</a></p>
+    <h1>Workflow Guardrail｜快速说明</h1>
+    <p>如果你第一次打开这个项目，只需要记住一句话：</p>
+    <p><strong>它不是帮 AI 做决定，而是在 AI 做完决定以后，检查这份输出有没有资格继续往下走。</strong></p>
+
+    <h2>1. 这个工具是干什么的？</h2>
+    <p>AI 把文字整理成 JSON 后，Workflow Guardrail 会在结果进入下游系统之前，按当前配置检查格式、字段、允许值和原文证据。结果为“已拦截”“需要人工复核”或“可进入人工复核”。它不会自动批准业务结果。</p>
+
+    <h2>2. 为什么需要它？</h2>
+    <p>合法 JSON 仍可能缺字段、使用不允许的值，或者写入原文中没有直接出现的内容。格式正确只是继续检查的起点。本项目是实习结束后，基于企业 AI 工作流调研中的通用问题完成的公开、脱敏实验；案例与规则均为虚构。</p>
+
+    <h2>3. 最快怎么体验？</h2>
+    <p>返回工具，点击“运行校验”，查看默认的客服意图分类案例。把 <code>urgency</code> 从“紧急”改成“不着急”，再运行一次：原文证据会通过，但允许值检查会拦截。也可选择“IT 服务工单”，把 <code>severity</code> 改成“低”，观察允许值检查变化。</p>
+
+    <h2>4. 四项检查是什么意思？</h2>
+    <ul>
+      <li>JSON 解析：输出是不是合法的顶层 JSON 对象？</li>
+      <li>字段完整性：要求的字段和值是否可用？</li>
+      <li>允许值检查：指定字段的文字是否在预设选项里？</li>
+      <li>原文证据：关键值是否在原始材料里逐字出现？没找到只表示缺少直接证据。</li>
+    </ul>
+    <p>“未配置”表示没有设置该项；“跳过”表示设置了，但前一步失败阻止执行。两者都不算通过。</p>
+
+    <h2>5. 自定义输入要准备什么？</h2>
+    <p>切到“自由模式”，编辑原始材料和顶层 JSON。打开“校验配置”，用逗号写必填字段、原文证据字段；允许值每行写成 <code>action = 换货 | 退款 | 维修</code>。预填的耳机案例可直接运行。将 <code>action</code> 改为“退款”，即可看到原文证据警告。输入只在当前浏览器会话中处理，不上传。</p>
+
+    <h2>6. 什么输入适合？</h2>
+    <p>适合顶层 JSON 的信息抽取、分类、标签和状态判断。字段名尽量简单明确；需要证据检查的值最好能在原文直接出现。</p>
+
+    <h2>7. 什么输入暂不适合？</h2>
+    <p>不支持嵌套字段规则、复杂跨字段条件、语义推理或自动事实核查；也不能判断合同效力、文案质量或业务决定是否合理。</p>
+
+    <h2>8. 为什么全部通过仍要人工复核？</h2>
+    <p>工具只说明已配置、已执行的机械检查没有发现问题。原文出现同一个词，不代表 AI 正确理解了上下文；未配置的内容也没有被检查。事实与业务适用性仍由人判断。</p>
+
+    <pre>原始材料
+   ↓
+  AI
+   ↓
+结构化 JSON
+   ↓
+Workflow Guardrail
+├─ JSON 格式
+├─ 字段完整性
+├─ 允许值
+└─ 原文证据
+   ↓
+人工复核 / 下游系统</pre>
+  </body>
+</html>

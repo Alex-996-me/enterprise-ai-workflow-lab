@@ -33,6 +33,7 @@ for (const template of templates) {
     assert.equal(result.gate, expectedTemplates[template.id].gate);
     assert.deepEqual(statuses(result), expectedTemplates[template.id].checks);
     if (template.id === "insurance_consultation") {
+      assert.deepEqual(template.validationConfig.evidenceFields, ["province", "city", "level2"]);
       assert(result.issues.some((issue) => issue.path === "$.level3" && issue.severity === "blocker"));
       assert(result.issues.some((issue) => issue.path === "$.city" && issue.severity === "warning"));
     }

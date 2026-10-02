@@ -1,44 +1,32 @@
 # Enterprise AI Workflow Lab
 
-> 一个公开、脱敏的企业 AI 输出校验实验项目。
+**AI 输出看起来像 JSON，不代表它已经适合进入下游系统。**
 
 ## Workflow Guardrail
 
-**AI 结构化输出校验台** · [Live Demo](https://alex-996-me.github.io/enterprise-ai-workflow-lab/) · [Repository](https://github.com/Alex-996-me/enterprise-ai-workflow-lab)
+一个公开、脱敏的 AI 结构化输出校验工具。**[立即体验 Live Demo](https://alex-996-me.github.io/enterprise-ai-workflow-lab/)**
 
-![Workflow Guardrail 将虚构案例中的分类路径错误标记为“已拦截”](artifacts/public-validation-blocked.png)
+## 30 秒上手
 
-模型输出具有结构化外观，并不意味着内容已经满足下游系统的可靠性要求。这个可交互 Demo 让你输入原始材料和模拟的 AI JSON 输出，观察哪些检查通过、哪些问题需要人工处理。
+1. 打开 Live Demo，选择一个测试场景。
+2. 点击“运行校验”，看右侧的最终判断和四项检查。
+3. 修改 JSON 中的一个字段，再运行一次，观察结果怎样变化。
 
-### 它能做什么
+默认的“客服意图分类”会提示原文证据不足；也可以选择全部通过的“IT 服务工单”。想用自己的内容时切到“自由模式”，它已预填蓝牙耳机案例，打开“校验配置”即可修改检查范围。详见 [中文快速说明](docs/QUICKSTART_CN.md)。
 
-- **JSON 解析：** 检查语法及顶层对象。
-- **字段契约：** 检查必填字段、字符串类型和必要的非空值。
-- **业务规则：** 检查完全虚构的演示分类路径。
-- **原文证据：** 检查非空地区值是否在原始材料中出现。
+## 它检查什么
 
-最终闸门显示**已拦截**、**需要人工复核**或**可进入人工复核**。最后一种状态只表示这些演示检查未发现阻断项，仍需人判断。
+| 检查 | 大白话解释 |
+| --- | --- |
+| JSON 解析 | 输出是不是合法 JSON？ |
+| 字段完整性 | 要求的字段有没有缺失，值是否可用？ |
+| 允许值检查 | 指定字段是否落在预设范围内？ |
+| 原文证据 | 关键值有没有在原始材料中直接出现？ |
 
-### 为什么做
+结果为“已拦截”“需要人工复核”或“可进入人工复核”。**它不是第二个 AI。它不是帮 AI 做决定，而是在 AI 做完决定以后，检查这份输出有没有资格继续往下走。**它在 AI 输出进入下游系统之前做一轮确定性的质量检查。“可进入人工复核”只表示已配置的检查没有发现问题，不等于业务事实正确。
 
-本项目源于本人 2026 年企业 AI workflow 实习调研中形成的一个认识：模型输出看起来像结构化数据，不代表它已经可靠。**实习结束后**，我将这一通用问题进一步抽象为公开、脱敏的浏览器工具；它不是实习期间开发的公司系统。
+## 项目来源与公开边界
 
-### 如何使用
+项目源于本人 2026 年企业 AI 工作流实习调研中形成的一个认识：模型能够输出，不等于系统能够直接使用。Workflow Guardrail 是**实习结束后**完成的公开、脱敏成果转化，不是公司内部系统，也不是实习期间交付的工具。所有案例与规则均为虚构。
 
-打开 [Live Demo](https://alex-996-me.github.io/enterprise-ai-workflow-lab/)，选择测试场景或自行编辑两段输入，点击“运行校验”，查看校验流程、问题明细和最终闸门。无需安装、登录或 API Key；输入只在浏览器本地处理，不上传服务器。
-
-流程：原始材料 + 模拟 AI 输出 → JSON Parse → Schema Contract → Business Rules → Evidence Match → Human Review Gate。
-
-### 公开边界与限制
-
-- 所有公开案例和分类树均为虚构；不包含真实客户材料、公司内部 workflow、原始 Prompt、内部 API／IP 或系统配置。
-- 原文证据检查只是字面匹配，不做语义推理或事实验证。
-- 分类路径不代表真实保险业务规则；本工具不是生产规则引擎、公司内部系统或自动业务决策工具。
-
-### Quick Access
-
-扫描二维码打开 [Live Demo](https://alex-996-me.github.io/enterprise-ai-workflow-lab/)：
-
-<img src="artifacts/live-demo-qr.png" alt="Live Demo 二维码" width="160">
-
-Developed by 栗海粟 as a post-internship, de-identified follow-up project.
+页面使用 HTML、CSS 和 Vanilla JavaScript；无需登录、后端、API Key 或真实 LLM。用户输入只在浏览器本地处理，不上传服务器。当前只检查顶层 JSON 字段、单字段允许值和逐字证据；不支持复杂业务逻辑或语义事实核查。

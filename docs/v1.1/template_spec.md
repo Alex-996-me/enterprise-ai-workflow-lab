@@ -119,10 +119,10 @@
 **`validationConfig`：**
 
 ```json
-{"requiredFields":["province","city","level1","level2","level3"],"evidenceFields":["province","city"],"enumRules":{"level1":["个人意外健康险"],"level2":["理赔","投保"],"level3":["材料咨询","理赔咨询"]}}
+{"requiredFields":["province","city","level1","level2","level3"],"evidenceFields":["province","city","level2"],"enumRules":{"level1":["个人意外健康险"],"level2":["理赔","投保"],"level3":["材料咨询","理赔咨询"]}}
 ```
 
-**Expected Result：** JSON 与字段通过；`level3 = 医疗咨询` 不在该模板允许值中，业务规则 FAIL；`city = 上海` 不在原文中，原文证据 WARNING；最终“已拦截”。这里仅检查每个字段自己的允许值，**不声称**验证跨字段分类路径或真实保险规则。
+**Expected Result：** JSON 与字段通过；`level3 = 医疗咨询` 不在该模板允许值中，允许值检查 FAIL；`city = 上海` 不在原文中，原文证据 WARNING；`level2 = 理赔` 可在原文中直接找到。最终“已拦截”。`level1` 和 `level3` 属于概括分类，不以逐字出现作为证据要求。这里仅检查每个字段自己的允许值，**不声称**验证跨字段分类路径或真实保险规则。
 
 ## 7. 模板覆盖与边界
 
