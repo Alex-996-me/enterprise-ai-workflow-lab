@@ -1,27 +1,29 @@
 "use strict";
 
-const originalText = "客户咨询辽宁地区某健康险的理赔材料。";
+const originalText = "客户咨询辽宁沈阳地区某健康险的理赔材料。";
 const demoOutputs = {
-  valid: { province: "辽宁", city: "", level1: "个人意外健康险", level2: "理赔", level3: "材料咨询" },
-  category: { province: "辽宁", city: "", level1: "个人意外健康险", level2: "理赔", level3: "医疗咨询" },
+  valid: { province: "辽宁", city: "沈阳", level1: "个人意外健康险", level2: "理赔", level3: "材料咨询" },
+  category: { province: "辽宁", city: "沈阳", level1: "个人意外健康险", level2: "理赔", level3: "医疗咨询" },
   evidence: { province: "辽宁", city: "上海", level1: "个人意外健康险", level2: "理赔", level3: "材料咨询" },
-  missing: { province: "辽宁", city: "", level1: "个人意外健康险", level2: "理赔" },
+  missing: { province: "辽宁", city: "沈阳", level1: "个人意外健康险", level2: "理赔" },
   combined: { province: "辽宁", city: "上海", level1: "个人意外健康险", level2: "理赔", level3: "医疗咨询" },
 };
 
-// 完全虚构的教学分类树，不代表任何公司的业务规则。
-const demoTaxonomy = {
-  "个人意外健康险": {
-    "理赔": ["理赔咨询", "材料咨询"],
-    "投保": ["投保咨询"],
+// UI-only example config. The validator itself knows nothing about this domain.
+const demoConfig = {
+  requiredFields: ["province", "city", "level1", "level2", "level3"],
+  evidenceFields: ["province", "city"],
+  enumRules: {
+    level1: ["个人意外健康险"],
+    level2: ["理赔", "投保"],
+    level3: ["理赔咨询", "材料咨询"],
   },
 };
-const requiredFields = ["province", "city", "level1", "level2", "level3"];
 const nodeNames = ["parse", "schema", "rules", "evidence"];
 const initialDetails = {
   parse: "检查 JSON 语法及顶层对象。",
-  schema: "检查必填字段及字符串类型。",
-  rules: "检查虚构分类路径。",
+  schema: "检查必填字段及有效标量值。",
+  rules: "检查虚构示例的字段允许值。",
   evidence: "检查地区值是否出现在原始输入中。",
 };
 
@@ -85,23 +87,18 @@ function loadSample(kind) {
 function setNode(name, status, detail) {
   const row = node(name);
   row.dataset.status = status;
-  row.querySelector(".node-status").textContent = ({ pass: "✓ 通过", warning: "! 警告", fail: "× 失败", skipped: "— 跳过" })[status];
+  row.querySelector(".node-status").textContent = ({ pass: "✓ 通过", warning: "! 警告", fail: "× 失败", skipped: "— 跳过", unconfigured: "— 未配置" })[status];
   row.querySelector(".node-detail").textContent = detail;
 }
 
-function showResult(status, issues, startedAt, inputFailure = false) {
-  const labels = { fail: "已拦截", warning: "需要人工复核", pass: "可进入人工复核" };
-  const icons = { fail: "×", warning: "!", pass: "✓" };
-  const gateKinds = { fail: "blocked", warning: "review", pass: "ready" };
-  const counts = { pass: 0, fail: 0, warning: 0 };
-  for (const name of nodeNames) {
-    const state = node(name).dataset.status;
-    if (state in counts) counts[state] += 1;
-  }
-  if (inputFailure) counts.fail += 1;
-  gate.dataset.gate = gateKinds[status];
-  gateLabel.textContent = `${icons[status]} ${labels[status]}`;
-  gateCount.textContent = `${counts.pass} 项通过 · ${counts.fail} 项失败 · ${counts.warning} 项警告`;
+function showResult(result, startedAt) {
+  const labels = { blocked: "已拦截", review: "需要人工复核", ready: "可进入人工复核" };
+  const icons = { blocked: "×", review: "!", ready: "✓" };
+  const { gate: gateKind, checks, issues, summary } = result;
+  for (const name of nodeNames) setNode(name, checks[name].status, checks[name].detail);
+  gate.dataset.gate = gateKind;
+  gateLabel.textContent = `${icons[gateKind]} ${labels[gateKind]}`;
+  gateCount.textContent = `${summary.pass} 项通过 · ${summary.fail} 项失败 · ${summary.warning} 项警告${summary.note ? ` · ${summary.note}` : ""}`;
   validationState.textContent = "已出结果";
   validationState.dataset.state = "result";
 
@@ -134,7 +131,7 @@ function showResult(status, issues, startedAt, inputFailure = false) {
     issueList.append(item);
   }
 
-  const completed = counts.pass + counts.fail + counts.warning - (inputFailure ? 1 : 0);
+  const completed = summary.pass + summary.fail + summary.warning;
   const elapsed = performance.now() - startedAt;
   runMeta.textContent = `第 ${String(runCount).padStart(3, "0")} 次运行 · ${completed} 项检查 · ${elapsed.toFixed(1)} ms`;
 }
@@ -144,73 +141,8 @@ function runWorkflow() {
   runCount += 1;
   hasRun = true;
   resetResults();
-  const text = sourceInput.value.trim();
-  const output = jsonInput.value.trim();
-  const issues = [];
-
-  if (!text || !output) {
-    for (const name of nodeNames) setNode(name, "skipped", "输入不完整，本项未运行。");
-    issues.push({ severity: "blocker", path: "$input", title: "输入不完整", detail: "原始输入和模型输出均不能为空。" });
-    showResult("fail", issues, startedAt, true);
-    return;
-  }
-
-  let data;
-  try {
-    data = JSON.parse(output);
-  } catch {
-    setNode("parse", "fail", "模型输出不是合法的 JSON。");
-    for (const name of ["schema", "rules", "evidence"]) setNode(name, "skipped", "JSON 解析失败，本项未运行。");
-    issues.push({ severity: "blocker", path: "$", title: "JSON 格式错误", detail: "模型输出不是合法的 JSON。" });
-    showResult("fail", issues, startedAt);
-    return;
-  }
-  if (data === null || typeof data !== "object" || Array.isArray(data)) {
-    setNode("parse", "fail", "JSON 顶层必须是对象。");
-    for (const name of ["schema", "rules", "evidence"]) setNode(name, "skipped", "缺少 JSON 对象，本项未运行。");
-    issues.push({ severity: "blocker", path: "$", title: "JSON 顶层类型错误", detail: "JSON 顶层必须是对象。" });
-    showResult("fail", issues, startedAt);
-    return;
-  }
-  setNode("parse", "pass", "JSON 对象解析成功。");
-
-  const schemaIssues = [];
-  for (const field of requiredFields) {
-    if (!Object.prototype.hasOwnProperty.call(data, field)) schemaIssues.push({ field, title: "缺少必填字段", detail: "该字段必须提供。" });
-    else if (typeof data[field] !== "string") schemaIssues.push({ field, title: "字段类型错误", detail: "该字段必须是字符串。" });
-    else if (field !== "city" && !data[field].trim()) schemaIssues.push({ field, title: "字段不能为空", detail: "该字段必须有值。" });
-  }
-  if (schemaIssues.length) {
-    setNode("schema", "fail", schemaIssues.map((item) => `$.${item.field}: ${item.detail}`).join(" "));
-    setNode("rules", "skipped", "字段契约未通过，本项未运行。");
-    setNode("evidence", "skipped", "字段契约未通过，本项未运行。");
-    issues.push(...schemaIssues.map((item) => ({ severity: "blocker", path: `$.${item.field}`, title: item.title, detail: item.detail })));
-    showResult("fail", issues, startedAt);
-    return;
-  }
-  setNode("schema", "pass", "必填字段均为字符串；city 允许为空。");
-
-  const levels = demoTaxonomy[data.level1]?.[data.level2];
-  const validPath = Array.isArray(levels) && levels.includes(data.level3);
-  if (validPath) {
-    setNode("rules", "pass", "分类路径符合虚构示例规则。");
-  } else {
-    setNode("rules", "fail", "分类路径不符合虚构示例规则。");
-    issues.push({ severity: "blocker", path: "$.level3", title: "分类路径非法", detail: `${data.level1} → ${data.level2} → ${data.level3}` });
-  }
-
-  const missingEvidence = ["province", "city"].filter((field) => {
-    const value = data[field].trim();
-    return value && !text.includes(value);
-  });
-  if (missingEvidence.length) {
-    setNode("evidence", "warning", missingEvidence.map((field) => `$.${field} 未在原始输入中找到。`).join(" "));
-    issues.push(...missingEvidence.map((field) => ({ severity: "warning", path: `$.${field}`, title: "缺少原文依据", detail: `输出值“${data[field].trim()}”未在原始输入中找到。` })));
-  } else {
-    setNode("evidence", "pass", "非空地区值均出现在原始输入中。");
-  }
-
-  showResult(!validPath ? "fail" : missingEvidence.length ? "warning" : "pass", issues, startedAt);
+  const result = WorkflowValidator.validateWorkflow(sourceInput.value, jsonInput.value, demoConfig);
+  showResult(result, startedAt);
 }
 
 sourceInput.addEventListener("input", () => { updateEditorMeta(); resetResults(hasRun); });
