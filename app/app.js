@@ -34,7 +34,8 @@ const configDialog = document.querySelector("#config-dialog");
 let runCount = 0;
 let hasRun = false;
 let mode = "template";
-let activeTemplate = WorkflowTemplates[0];
+let activeTemplate = WorkflowTemplates.find((template) => template.id === "it_service");
+let itGuideShown = false;
 let freeDraft = {
   sourceText: freeExample.sourceText,
   modelOutputText: JSON.stringify(freeExample.modelOutput, null, 2),
@@ -99,7 +100,7 @@ function loadTemplate(template) {
   updateEditorMeta();
   hasRun = false;
   resetResults();
-  quickTip.textContent = "最快体验：点击「运行校验」，然后修改一个字段再运行一次。";
+  quickTip.textContent = "30 秒体验：先运行一次 → 改一个字段 → 再运行";
   renderConfigSummary();
 }
 
@@ -181,7 +182,10 @@ function showResult(result, startedAt) {
   const elapsed = performance.now() - startedAt;
   runMeta.textContent = `第 ${String(runCount).padStart(3, "0")} 次运行 · ${completed} 项检查 · ${elapsed.toFixed(1)} ms`;
   if (mode === "template" && activeTemplate.id === "customer_intent") quickTip.textContent = "试试把 urgency 改成「不着急」再运行：原文有这个词，但它不在允许值中。";
-  else if (mode === "template" && activeTemplate.id === "it_service") quickTip.textContent = "试试把 severity 改成「低」，再运行一次。";
+  else if (mode === "template" && activeTemplate.id === "it_service" && gateKind === "ready" && !itGuideShown) {
+    quickTip.textContent = "想看它怎么拦问题？把 severity 从‘紧急’改成‘低’，再运行一次。";
+    itGuideShown = true;
+  } else if (mode === "template" && activeTemplate.id === "it_service") quickTip.textContent = "30 秒体验：先运行一次 → 改一个字段 → 再运行";
   else if (mode === "free") quickTip.textContent = "试试把 action 从「换货」改成「退款」，再运行一次。";
 }
 
