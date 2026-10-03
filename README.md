@@ -8,7 +8,7 @@
 
 选择“IT 服务工单” → 点击“运行校验” → 把 `severity` 从“紧急”改成“低” → 再运行一次。
 
-![IT 服务工单案例中允许值检查失败，最终结果为已拦截](artifacts/onboarding-it-blocked.png)
+![IT 服务工单案例中允许值检查失败，最终结果为已拦截](artifacts/v1.1-public-blocked.png)
 
 ## Workflow Guardrail
 

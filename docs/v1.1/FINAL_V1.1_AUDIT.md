@@ -44,9 +44,11 @@ v1.0.0 是固定字段与虚构保险分类案例的 proof of concept。v1.1.0 �
 
 主 UI 仅使用四项新名称，未出现“业务规则”或“字段契约”。README 顶部包含价值句、Live Demo、30 秒上手和 IT 案例截图；Quickstart Markdown 与 HTML 均以普通用户能理解的语言解释用途与限制。
 
+公网 Pages 更新到 v1.1 后，重新从公开入口验证：默认 IT 模板保持未运行；“紧急”四项 PASS；改为“低”后允许值 FAIL、原文证据 WARNING、`$.severity` 与“已拦截”均显示正确。切换客服意图、报销单据、合同信息三个额外模板后，原文、JSON 与配置摘要同步更新。自由模式“换货”四项 PASS，“退款”产生 `$.action` 原文证据 WARNING；“校验配置”“输入规范”“关于本项目”均能打开；About 内的 Quickstart 链接可到达公网 HTML 说明页。
+
 ## 8. Privacy Audit
 
-`git ls-files` 和当前所有分支／tag 的提交路径均未发现 `private_sources/`、原始 PDF／DOCX 或密钥文件。相对 v1.0.0 的新增二进制文件只有已人工验收的虚构 IT 案例页面截图。新增应用、README、v1.1 文档与测试中，未发现手机号、身份证号、API key、token、内部 URL／IP、本地绝对路径、真实客户资料、公司配置或内部截图；出现的 URL 仅为公开 Demo 与本地测试地址。发布前内容不包含原始实习材料。
+`git ls-files` 和当前所有分支／tag 的提交路径均未发现 `private_sources/`、原始 PDF／DOCX 或密钥文件。相对 v1.0.0 的新增二进制文件是虚构 IT 案例的本地验收截图及两张公网发布截图，均已目视检查，不含内部系统画面。新增应用、README、v1.1 文档与测试中，未发现手机号、身份证号、API key、token、内部 URL／IP、本地绝对路径、真实客户资料、公司配置或内部截图；出现的 URL 仅为公开 Demo 与本地测试地址。发布内容不包含原始实习材料。无需登录或凭据的 HTTP 请求对 Public Repo、Live Demo、Quickstart HTML 均返回 200。
 
 ## 9. Known Limitations
 
@@ -59,6 +61,8 @@ v1.0.0 是固定字段与虚构保险分类案例的 proof of concept。v1.1.0 �
 
 ## 11. Gate
 
-**READY FOR V1.1 PUBLICATION**
+公网已核验的 v1.1 合并提交为 `4415be77faafcd429923e5f528619c7224e05733`。Git 提交不能在自身内容中写入自身 SHA；包含本审计更新的最终 main SHA 由 `v1.1.0^{commit}` 指向，并在发布汇报中列出。
 
-公网 Pages、匿名访问、桌面／移动端和最终截图将在合并发布后补充核验记录；通过后将 Gate 更新为 `PUBLIC V1.1 READY`。
+1440×900 桌面视口下，三栏宽度为 446／547／446 px，运行按钮与最终闸门均在首屏，页面宽度无溢出。390×844 移动视口下，三栏按原设计纵向堆叠，每栏宽 390 px，页面无横向溢出，运行按钮可见。两张从公网 Pages 截取并目视核查的截图为 `artifacts/v1.1-public-default.png` 和 `artifacts/v1.1-public-blocked.png`；后者展示 `severity = 低`、允许值失败及“已拦截”。README 已引用新版 blocked 截图。
+
+**PUBLIC V1.1 READY**
