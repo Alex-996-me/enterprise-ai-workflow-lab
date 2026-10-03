@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workflow Guardrail｜快速说明</title>
+    <style>
+      :root { font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: #e7edf3; background: #0b121b; }
+      body { max-width: 760px; margin: 0 auto; padding: 30px 22px 60px; line-height: 1.7; }
+      h1 { font-size: 25px; } h2 { margin-top: 25px; font-size: 18px; }
+      p, li { color: #b8c9d8; } strong { color: #eef5fa; }
+      a { color: #8cc6ef; } code { color: #cbe2f0; }
+    </style>
+  </head>
+  <body>
+    <p><strong>它不是帮 AI 做决定，而是在 AI 做完决定以后，检查这份输出有没有资格继续往下走。</strong></p>
+    <h1>Workflow Guardrail｜快速说明</h1>
+    <p>这是一款公开、脱敏的结构化输出校验工具。AI 生成 JSON 后，它在结果进入下游系统前做一轮确定性检查；不会再次调用 AI，也不会自动批准业务结果。</p>
+
+    <h2>30 秒体验</h2>
+    <p><a href="../app/">打开工具</a>。页面已载入虚构的“IT 服务工单”，不需要先设置规则。点击“运行校验”，四项检查会通过，最终显示“可进入人工复核”。接着只把 JSON 中的 <code>severity</code> 从“紧急”改成“低”，再运行一次：允许值检查失败，最终变为“已拦截”。你能看到格式正确的 JSON 为什么仍可能不能继续进入系统。</p>
+
+    <h2>四项检查</h2>
+    <ul>
+      <li>JSON 解析：输出是不是合法的顶层 JSON 对象？</li>
+      <li>字段完整性：要求的字段是否存在，值是否可用？</li>
+      <li>允许值检查：指定字段的文字是否在预设范围？</li>
+      <li>原文证据：关键值是否在原始材料中逐字出现？没找到只表示缺少直接证据，不能断言值错误。</li>
+    </ul>
+    <p>“未配置”表示没有设置这项检查；“跳过”表示设置了，但前一步失败，因而无法执行。两者都不算通过。</p>
+
+    <h2>使用自己的输入</h2>
+    <p>切到“自由模式”，页面会预填蓝牙耳机案例。你可以编辑原始材料和顶层 JSON，再打开“校验配置”：用逗号写必填字段、原文证据字段；允许值每行写成 <code>action = 换货 | 退款 | 维修</code>。保存后点击运行。输入和配置仅在当前浏览器会话中使用，不上传服务器。</p>
+
+    <h2>适合与暂不适合</h2>
+    <p>适合信息抽取、分类、标签和状态判断，尤其适合关键值能在原文中直接找到的顶层 JSON。暂不支持嵌套字段规则、复杂跨字段逻辑、语义推理、自动事实核查，或判断合同效力和业务决定是否合理。</p>
+
+    <h2>为什么全部通过仍需人工判断？</h2>
+    <p>工具只能说明<strong>已配置、已执行</strong>的机械检查没有发现问题。原文出现同一个词，不代表 AI 理解了上下文；未配置的方面也没有被检查。因此“可进入人工复核”仍需要人判断事实、语境和业务适用性。所有演示案例与规则均为虚构。</p>
+  </body>
+</html>
